@@ -22,27 +22,29 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
 # What model to download.
-MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
-MODEL_FILE = MODEL_NAME + '.tar.gz'
-DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
+#MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017'
+#MODEL_FILE = MODEL_NAME + '.tar.gz'
+#DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
 
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
-PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
+PATH_TO_CKPT = 'frozen_inference_graph.pb'
 
 # List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = os.path.join('data', 'mscoco_label_map.pbtxt')
+PATH_TO_LABELS = os.path.join('data', 'widerface.pbtxt')
 
-NUM_CLASSES = 90
+NUM_CLASSES = 20
 
 #download model
-opener = urllib.request.URLopener()
+#opener = urllib.request.URLopener()
 #下载模型，如果已经下载好了下面这句代码可以注释掉
+"""
 opener.retrieve(DOWNLOAD_BASE + MODEL_FILE, MODEL_FILE)
 tar_file = tarfile.open(MODEL_FILE)
 for file in tar_file.getmembers():
     file_name = os.path.basename(file.name)
     if 'frozen_inference_graph.pb' in file_name:
         tar_file.extract(file, os.getcwd())
+"""
 
 #Load a (frozen) Tensorflow model into memory.
 detection_graph = tf.Graph()
@@ -68,14 +70,16 @@ def load_image_into_numpy_array(image):
 # image2.jpg
 # If you want to test the code with your images, just add path to the images to the TEST_IMAGE_PATHS.
 PATH_TO_TEST_IMAGES_DIR = 'test_images'
-TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, 'image{}.jpg'.format(i)) for i in range(1, 2) ]
+TEST_IMAGE= [ ('1{}.jpg'.format(i)) for i in range(0, 4) ]
 
 # Size, in inches, of the output images.
 IMAGE_SIZE = (12, 8)
 
 with detection_graph.as_default():
   with tf.Session(graph=detection_graph) as sess:
-    for image_path in TEST_IMAGE_PATHS:
+    for test_image in TEST_IMAGE:
+      image_path=os.path.join(PATH_TO_TEST_IMAGES_DIR,test_image)
+      print(image_path)
       image = Image.open(image_path)
       # the array based representation of the image will be used later in order to prepare the
       # result image with boxes and labels on it.
@@ -105,4 +109,4 @@ with detection_graph.as_default():
           line_thickness=8)
       #plt.figure(figsize=IMAGE_SIZE)
       #plt.imshow(image_np)
-      plt.imsave('imagetest0.jpg',image_np)
+      plt.imsave(test_image,image_np)
